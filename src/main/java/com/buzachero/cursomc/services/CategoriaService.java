@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.buzachero.cursomc.domain.Categoria;
+import com.buzachero.cursomc.domain.Cliente;
 import com.buzachero.cursomc.dto.CategoriaDTO;
 import com.buzachero.cursomc.repositories.CategoriaRepository;
 import com.buzachero.cursomc.services.exceptions.DataIntegrityException;
@@ -34,8 +35,9 @@ public class CategoriaService {
 	}
 	
 	public Categoria update(Categoria obj) {
-		find(obj.getId());
-		return categoriaRepository.save(obj);
+		Categoria newCategoria = find(obj.getId());
+		updateData(newCategoria, obj);
+		return categoriaRepository.save(newCategoria);
 	}
 	
 	public void delete(Integer id) {
@@ -61,4 +63,7 @@ public class CategoriaService {
 		return new Categoria(categoriaDTO.getId(), categoriaDTO.getNome());
 	}
 	
+	private void updateData(Categoria newCategoria, Categoria categoria) {
+		newCategoria.setNome(categoria.getNome());
+	}
 }
