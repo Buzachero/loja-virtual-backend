@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.buzachero.cursomc.domain.Cidade;
 import com.buzachero.cursomc.domain.Cliente;
@@ -27,10 +28,7 @@ public class ClienteService {
 	
 	@Autowired
 	private ClienteRepository clienteRepo;
-	
-	@Autowired
-	private CidadeRepository cidadeRepository;
-	
+		
 	@Autowired
 	private EnderecoRepository enderecoRepository;
 	
@@ -46,6 +44,7 @@ public class ClienteService {
 		return clienteRepo.save(newCliente);
 	}
 	
+	@Transactional
 	public Cliente insert(Cliente cliente) {
 		cliente.setId(null);
 		cliente = clienteRepo.save(cliente);
@@ -78,8 +77,8 @@ public class ClienteService {
 	
 	public Cliente fromDTO(ClienteNewDTO clienteNewDTO) {
 		Cliente cliente = new Cliente(null, clienteNewDTO.getNome(), clienteNewDTO.getEmail(), clienteNewDTO.getCpfOuCnpj(), TipoCliente.toEnum(clienteNewDTO.getTipo()));
-		Optional<Cidade> cidade = cidadeRepository.findById(clienteNewDTO.getCidadeId());
-		Endereco end = new Endereco(null, clienteNewDTO.getLogradouro(), clienteNewDTO.getNumero(), clienteNewDTO.getComplemento(), clienteNewDTO.getBairro(), clienteNewDTO.getCep(), cliente, cidade.get());
+		Cidade cidade = new Cidade(clienteNewDTO.getCidadeId(), null, null);		
+		Endereco end = new Endereco(null, clienteNewDTO.getLogradouro(), clienteNewDTO.getNumero(), clienteNewDTO.getComplemento(), clienteNewDTO.getBairro(), clienteNewDTO.getCep(), cliente, cidade);
 		cliente.getEnderecos().add(end);
 		cliente.getTelefones().add(clienteNewDTO.getTelefone1());
 		
