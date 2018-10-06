@@ -39,6 +39,7 @@ public class ClienteService {
 	}
 	
 	public Cliente update(Cliente obj) {
+		System.out.println("UPDATING " + obj.toString());
 		Cliente newCliente = find(obj.getId());
 		updateData(newCliente, obj);
 		return clienteRepo.save(newCliente);
