@@ -34,6 +34,8 @@ public class PedidoService {
 	@Autowired
 	private ClienteService clienteService;
 	
+	@Autowired
+	private EmailService emailService;
 	
 	@Autowired
 	private ItemPedidoRepository itemPedidoRepository;
@@ -69,7 +71,7 @@ public class PedidoService {
 		
 		itemPedidoRepository.saveAll(pedido.getItens());
 		
-		System.out.println(pedido);
+		emailService.sendOrderConfirmationEmail(pedido);
 		
 		return pedido;
 	}
