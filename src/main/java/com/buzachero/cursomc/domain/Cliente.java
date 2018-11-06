@@ -56,8 +56,7 @@ public class Cliente implements Serializable {
 	@ElementCollection(fetch=FetchType.EAGER)
 	@CollectionTable(name="PERFIS")
 	private Set<Integer> perfis = new HashSet<>();
-	
-	private String imageUrl;
+
 
 	public Cliente() {
 		addPerfil(Perfil.CLIENTE);
@@ -184,12 +183,5 @@ public class Cliente implements Serializable {
 				+ ", tipoCliente=" + tipoCliente + "]";
 	}
 
-	public String getImageUrl() {
-		return imageUrl;
-	}
-
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
 	
 }
