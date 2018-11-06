@@ -35,7 +35,7 @@ public class ClienteService {
 	private BCryptPasswordEncoder bcpe;
 	
 	@Autowired
-	private ClienteRepository clienteRepo;
+	private ClienteRepository clienteRepository;
 		
 	@Autowired
 	private EnderecoRepository enderecoRepository;
@@ -50,7 +50,7 @@ public class ClienteService {
 			throw new AuthorizationException("Acesso negado");
 		}
 		
-		Optional<Cliente> obj = clienteRepo.findById(id);
+		Optional<Cliente> obj = clienteRepository.findById(id);
 		return obj.orElseThrow(() -> new ObjectNotFoundException(
 				"Objeto nao encontrado! Id: " + id + ", Tipo: " + Cliente.class.getName()));
 	}
@@ -59,13 +59,13 @@ public class ClienteService {
 		System.out.println("UPDATING " + obj.toString());
 		Cliente newCliente = find(obj.getId());
 		updateData(newCliente, obj);
-		return clienteRepo.save(newCliente);
+		return clienteRepository.save(newCliente);
 	}
 	
 	@Transactional
 	public Cliente insert(Cliente cliente) {
 		cliente.setId(null);
-		cliente = clienteRepo.save(cliente);
+		cliente = clienteRepository.save(cliente);
 		enderecoRepository.saveAll(cliente.getEnderecos());
 		return cliente;
 	}
@@ -73,20 +73,20 @@ public class ClienteService {
 	public void delete(Integer id) {
 		find(id);
 		try {
-			clienteRepo.deleteById(id);
+			clienteRepository.deleteById(id);
 		} catch(DataIntegrityViolationException e) {
 			throw new DataIntegrityException("Não é possivel excluir porque há entidades relacionadas");
 		}
 	}
 
 	public List<Cliente> findAll() {
-		List<Cliente> categorias = clienteRepo.findAll();		
+		List<Cliente> categorias = clienteRepository.findAll();		
 		return categorias;
 	}
 	
 	public Page<Cliente> findPage(Integer page, Integer linesPerPage, String orderBy, String direction) {
 		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy); 
-		return clienteRepo.findAll(pageRequest);
+		return clienteRepository.findAll(pageRequest);
 	}
 	
 	public Cliente fromDTO(ClienteDTO clienteDTO) {
@@ -117,7 +117,17 @@ public class ClienteService {
 	}
 	
 	public URI uploadProfilePicture(MultipartFile multipartFile) {
-		return s3Service.uploadFile(multipartFile);
+		UserSS userSS = UserService.authenticated();
+		if(userSS == null) {
+			throw new AuthorizationException("Acesso negado");
+		}
+		
+		URI uri = s3Service.uploadFile(multipartFile);
+		Optional<Cliente> cliente = clienteRepository.findById(userSS.getId());
+		cliente.get().setImageUrl(uri.toString());
+		clienteRepository.save(cliente.get());
+		
+		return uri;
 	}
 	
 }
