@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -30,22 +31,38 @@ public class ClienteResource {
 	
 	@Autowired
 	private ClienteService clienteService;
-	
-	
+
+	@ApiOperation(value = "Recupera um cliente pelo id",
+			notes = "Recupera as informações de um cliente pelo seu identificador",
+			nickname = "findCliente",
+			consumes = "application/json",
+			produces = "application/json",
+			response = Cliente.class)
 	@RequestMapping(value="/{id}", method=RequestMethod.GET)
-	public ResponseEntity<Cliente> find(@PathVariable Integer id) {
+	public ResponseEntity<Cliente> findCliente(@PathVariable Integer id) {
 		Cliente obj = clienteService.find(id);
 		return ResponseEntity.ok().body(obj);
 	}
-	
+
+	@ApiOperation(value = "Recupera um cliente pelo e-mail",
+			notes = "Recupera as informações de um cliente pelo seu e-mail cadastrado",
+			nickname = "findClienteByEmail",
+			consumes = "application/json",
+			produces = "application/json",
+			response = Cliente.class)
 	@RequestMapping(value="/email", method=RequestMethod.GET)
-	public ResponseEntity<Cliente> find(@RequestParam(value="value") String email) {
+	public ResponseEntity<Cliente> findClienteByEmail(@RequestParam(value="value") String email) {
 		Cliente cliente = clienteService.findByEmail(email);
 		return ResponseEntity.ok().body(cliente);
 	}
-	
+
+	@ApiOperation(value = "Cadastra um cliente",
+			notes = "Cadastra as informações de um cliente",
+			nickname = "insertCliente",
+			consumes = "application/json",
+			produces = "application/json")
 	@RequestMapping(method=RequestMethod.POST)
-	public ResponseEntity<Void> insert(@Valid @RequestBody ClienteNewDTO clienteNewDTO) {
+	public ResponseEntity<Void> insertCliente(@Valid @RequestBody ClienteNewDTO clienteNewDTO) {
 		Cliente cliente = clienteService.fromDTO(clienteNewDTO);
 		cliente = clienteService.insert(cliente);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -53,22 +70,37 @@ public class ClienteResource {
 		
 		return ResponseEntity.created(uri).build();
 	}
-	
+
+	@ApiOperation(value = "Atualiza um cliente",
+			notes = "Atualiza as informações de um cliente cadastrado",
+			nickname = "updateCliente",
+			consumes = "application/json",
+			produces = "application/json")
 	@RequestMapping(value="/{id}", method=RequestMethod.PUT)
-	public ResponseEntity<Void> update(@Valid @RequestBody ClienteDTO objDTO, @PathVariable Integer id) {
+	public ResponseEntity<Void> updateCliente(@Valid @RequestBody ClienteDTO objDTO, @PathVariable Integer id) {
 		Cliente obj = clienteService.fromDTO(objDTO);
 		obj.setId(id);
 		obj = clienteService.update(obj);
 		return ResponseEntity.noContent().build();
 	}
-	
+
+	@ApiOperation(value = "Remove um cliente pelo id",
+			notes = "Remove todas as informações de um cliente cadastrado pelo seu identificador",
+			nickname = "deleteCliente",
+			consumes = "application/json",
+			produces = "application/json")
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	@RequestMapping(value="/{id}", method=RequestMethod.DELETE)
-	public ResponseEntity<Void> delete(@PathVariable Integer id) {
+	public ResponseEntity<Void> deleteCliente(@PathVariable Integer id) {
 		clienteService.delete(id);
 		return ResponseEntity.noContent().build();
 	}
-	
+
+	@ApiOperation(value = "Lista todos os clientes cadastrados",
+			notes = "Lista as informações de todos os clientes cadastrados",
+			nickname = "findAll",
+			consumes = "application/json",
+			produces = "application/json")
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	@RequestMapping(method=RequestMethod.GET)
 	public ResponseEntity<List<ClienteDTO>> findAll() {
@@ -76,7 +108,12 @@ public class ClienteResource {
 		List<ClienteDTO> listDTO = list.stream().map(obj -> new ClienteDTO(obj)).collect(Collectors.toList());
 		return ResponseEntity.ok().body(listDTO);
 	}
-	
+
+	@ApiOperation(value = "Lista uma página de clientes",
+			notes = "Lista as informações dos clientes cadastrados de forma paginada",
+			nickname = "findClientePage",
+			consumes = "application/json",
+			produces = "application/json")
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	@RequestMapping(value="/page", method=RequestMethod.GET)
 	public ResponseEntity<Page> findPage(
@@ -84,11 +121,16 @@ public class ClienteResource {
 			@RequestParam(value="linesPerPage", defaultValue="24") Integer linesPerPage, 
 			@RequestParam(value="orderBy", defaultValue="nome") String orderBy, 
 			@RequestParam(value="direction", defaultValue="ASC") String direction) {
-		Page<Cliente> list = clienteService.findPage(page, linesPerPage, orderBy, direction);
+		Page<Cliente> list = clienteService.findClientePage(page, linesPerPage, orderBy, direction);
 		Page<ClienteDTO> listDTO = list.map(obj -> new ClienteDTO(obj));
 		return ResponseEntity.ok().body(listDTO);
-	}	
-	
+	}
+
+	@ApiOperation(value = "Atualiza/Adiciona foto de perfil do cliente",
+			notes = "Atualiza ou adiciona a foto de perfil do cliente cadastrado",
+			nickname = "uploadProfilePicture",
+			consumes = "application/json",
+			produces = "application/json")
 	@RequestMapping(value="/picture", method=RequestMethod.POST)
 	public ResponseEntity<Void> uploadProfilePicture(@RequestParam(name="file") MultipartFile file) {
 		URI uri = clienteService.uploadProfilePicture(file);
