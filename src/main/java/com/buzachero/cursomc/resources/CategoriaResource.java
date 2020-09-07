@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import com.buzachero.cursomc.domain.Produto;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -28,17 +30,27 @@ public class CategoriaResource {
 	
 	@Autowired
 	private CategoriaService categoriaService;
-	
-	
+
+	@ApiOperation(value = "Recupera uma categoria pelo id",
+			notes = "Recupera as informações de  uma categoria pelo seu identificador",
+			nickname = "findCategoria",
+			consumes = "application/json",
+			produces = "application/json",
+			response = Categoria.class)
 	@RequestMapping(value="/{id}", method=RequestMethod.GET)
-	public ResponseEntity<Categoria> find(@PathVariable Integer id) {
+	public ResponseEntity<Categoria> findCategoria(@PathVariable Integer id) {
 		Categoria obj = categoriaService.find(id);
 		return ResponseEntity.ok().body(obj);
 	}
-	
+
+	@ApiOperation(value = "Cadastra uma categoria",
+			notes = "Cadastra as informações de  uma categoria",
+			nickname = "insertCategoria",
+			consumes = "application/json",
+			produces = "application/json")
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	@RequestMapping(method=RequestMethod.POST)
-	public ResponseEntity<Void> insert(@Valid @RequestBody CategoriaDTO objDTO) {
+	public ResponseEntity<Void> insertCategoria(@Valid @RequestBody CategoriaDTO objDTO) {
 		Categoria obj = categoriaService.fromDTO(objDTO);
 		obj = categoriaService.insert(obj);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -46,30 +58,52 @@ public class CategoriaResource {
 		
 		return ResponseEntity.created(uri).build();
 	}
-	
+
+	@ApiOperation(value = "Atualiza uma categoria",
+			notes = "Atualiza as informações de  uma categoria",
+			nickname = "updateCategoria",
+			consumes = "application/json",
+			produces = "application/json")
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	@RequestMapping(value="/{id}", method=RequestMethod.PUT)
-	public ResponseEntity<Void> update(@Valid @RequestBody CategoriaDTO objDTO, @PathVariable Integer id) {
+	public ResponseEntity<Void> updateCategoria(@Valid @RequestBody CategoriaDTO objDTO, @PathVariable Integer id) {
 		Categoria obj = categoriaService.fromDTO(objDTO);
 		obj.setId(id);
 		obj = categoriaService.update(obj);
 		return ResponseEntity.noContent().build();
 	}
-	
+
+	@ApiOperation(value = "Remove uma categoria",
+			notes = "Remove as informações de  uma categoria",
+			nickname = "deleteCategoria",
+			consumes = "application/json",
+			produces = "application/json")
 	@PreAuthorize("hasAnyRole('ADMIN')")
 	@RequestMapping(value="/{id}", method=RequestMethod.DELETE)
-	public ResponseEntity<Void> delete(@PathVariable Integer id) {
+	public ResponseEntity<Void> deleteCategoria(@PathVariable Integer id) {
 		categoriaService.delete(id);
 		return ResponseEntity.noContent().build();
 	}
-	
+
+	@ApiOperation(value = "Lista todas as categorias",
+			notes = "Lista as informações de todas as categorias cadastradas",
+			nickname = "findAll",
+			consumes = "application/json",
+			produces = "application/json",
+			response = Categoria[].class)
 	@RequestMapping(method=RequestMethod.GET)
 	public ResponseEntity<List<CategoriaDTO>> findAll() {
 		List<Categoria> list = categoriaService.findAll();
 		List<CategoriaDTO> listDTO = list.stream().map(obj -> new CategoriaDTO(obj)).collect(Collectors.toList());
 		return ResponseEntity.ok().body(listDTO);
 	}
-	
+
+	@ApiOperation(value = "Lista uma página de categorias",
+			notes = "Lista as informações de todas as categorias cadastradas de forma paginada",
+			nickname = "findPage",
+			consumes = "application/json",
+			produces = "application/json",
+			response = Categoria[].class)
 	@RequestMapping(value="/page", method=RequestMethod.GET)
 	public ResponseEntity<Page> findPage(
 			@RequestParam(value="page", defaultValue="0") Integer page, 

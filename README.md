@@ -12,6 +12,7 @@ Sistema backend que gerencia uma loja virtual. Possui funcionalidades como:
 - [JSON Web Token (JWT)](https://jwt.io/)
 - [MySQL](https://www.mysql.com/) / [H2](https://www.h2database.com/html/main.html)
 - [Amazon S3](https://aws.amazon.com/pt/s3/)
+- [Swagger](https://swagger.io/)
 
 ## Requerimentos
 - JDK 1.8
@@ -43,65 +44,4 @@ s3.region=<Region>
 A configuração do e-mail para onde serão enviadas as notificações do sistema pode ser feita em **application-dev.properties** ou **application-prod.properties**, na seguinte propriedade:
 ```
 spring.mail.*
-```
-
-## Execução
-### Cliente	
-* Para listar as informações de todos os clientes:
-```
-GET /clientes
-```
-* Para obter informações de um cliente:
-```
-GET /clientes/<id>
-```
-* Para cadastrar um cliente:
-```
-POST /clientes
-```
-* Para atualizar as informações de um cliente:
-```
-PUT /clientes/<id>
-```
-* Para remover um cliente:
-```
-DELETE /clientes/<id>
-```
-
-### Categoria
-* Para listar as informaçes de todas as categorias:
-```
-GET /categorias
-```
-* Para obter informações de uma categoria:
-```
-GET  /categorias/<id>
-```
-* Para cadastrar uma categoria:
-```
-POST /categorias
-```
-* Para atualizar as informações de uma categoria:
-```
-PUT /categorias/<id>
-```
-* Para remover uma categoria:
-```
-DELETE /categorias/<id>
-```
-
-### Produto
-* Para obter informações de um produto:
-```
-GET  /produtos/<id>
-```
-
-### Pedido
-* Para obter informações de um pedido:
-```
-GET  /pedidos/<id>
-```
-* Para cadastrar um pedido:
-```
-POST /pedidos
 ```

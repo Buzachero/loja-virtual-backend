@@ -2,6 +2,8 @@ package com.buzachero.cursomc.resources;
 
 import java.util.List;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -24,15 +26,26 @@ public class ProdutoResource {
 	@Autowired
 	private ProdutoService produtoService;
 	
-	
+	@ApiOperation(value = "Recupera um produto pelo id",
+					notes = "Recupera as informações de um produto pelo seu identificador",
+					nickname = "findProdutoById",
+					consumes = "application/json",
+					produces = "application/json",
+					response = Produto.class)
 	@RequestMapping(value="/{id}", method=RequestMethod.GET)
-	public ResponseEntity<Produto> find(@PathVariable Integer id) {
+	public ResponseEntity<Produto> findProdutoById(@PathVariable Integer id) {
 		Produto obj = produtoService.find(id);
 		return ResponseEntity.ok().body(obj);
 	}
-	
+
+	@ApiOperation(value = "Lista os produtos por página",
+			notes = "Lista as informações dos produtos de forma paginada",
+			nickname = "listProductsPerPage",
+			consumes = "application/json",
+			produces = "application/json",
+			response = ProdutoDTO.class)
 	@RequestMapping(method=RequestMethod.GET)
-	public ResponseEntity<Page<ProdutoDTO>> findPage(
+	public ResponseEntity<Page<ProdutoDTO>> listProductsPerPage(
 			@RequestParam(value="nome", defaultValue="") String nome,
 			@RequestParam(value="categorias", defaultValue="") String categorias,
 			@RequestParam(value="page", defaultValue="0") Integer page, 
